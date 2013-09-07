@@ -1,0 +1,32 @@
+﻿<Window x:Class="Assignment4.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         xmlns:ucCard = "clr-namespace:CardGameControls;assembly=CardGameControls"
+        Title="Black Jack"    Height="742" Width="1045" ResizeMode="NoResize" DataContext="{Binding}" Icon="/Assignment4;component/Club.ico">
+    
+        <DockPanel>
+        <Grid Name="OuterGrid" OpacityMask="Black">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+            
+                <Grid Name="MainGrid" OpacityMask="Black">
+                <Grid.Background>
+                    <ImageBrush ImageSource="/Assignment4;component/Images/300px-French_suits_svg.png" TileMode="Tile" Viewport="0.3,0.3,0.3,0.45" Opacity=".50" Stretch="none"  />
+                </Grid.Background>
+                    
+                </Grid>
+               
+        </ScrollViewer >
+            <Button Content="New Game" Height="38" HorizontalAlignment="Left" Margin="12,650,0,0" Name="btnNewGame" VerticalAlignment="Top" Width="165" FontSize="16" Click="btnNewGame_Click" />
+            <Button Content="New Player" FontSize="16" Height="38" HorizontalAlignment="Left" Margin="200,650,0,0" Name="btnNewPlayer" VerticalAlignment="Top" Width="165" Click="btnNewPlayer_Click_1" />
+            <Button Content="Exit" FontSize="16" Height="38" HorizontalAlignment="Left" Margin="847,650,0,0" Name="btnExit" VerticalAlignment="Top" Width="165" />
+            <Button Content="Start Game" FontSize="16" Height="38" HorizontalAlignment="Left" Margin="393,650,0,0" Name="btnStartNewGame" VerticalAlignment="Top" Width="165" Click="btnStartNewGame_Click" />
+            
+            <Rectangle Height="90" HorizontalAlignment="Left" Margin="12,13,0,0" Name="rectangle1" Stroke="Red" VerticalAlignment="Top" Width="1000" StrokeThickness="5">
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="/Assignment4;component/Images/BJ%20copy.jpg" />
+                </Rectangle.Fill>
+            </Rectangle>
+        </Grid>
+    </DockPanel>
+    
+</Window>

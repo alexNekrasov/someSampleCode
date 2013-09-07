@@ -1,0 +1,276 @@
+<html>
+  <head>
+    <title>Lund</title>
+    <script src='http://maps.google.com/maps?file=api&amp;v=2&amp;key=AIzaSyAdaMQ34VBAVoHfgzK6zBfPVgthx3InD30'></script>
+    <script src="http://openlayers.org/api/2.11/OpenLayers.js"></script>
+    <script src="ScaleBar.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script type="text/javascript" src="ddaccordion.js"></script>
+
+     <link rel="stylesheet" type="text/css" href="scalebar-thin.css"/>
+  <script defer="defer" type="text/javascript">
+	var map;
+	var wms;
+	var gmapLayer;
+
+					
+    function initialize() {
+			var options = {controls: [new OpenLayers.Control.Navigation(), 
+			new OpenLayers.Control.MousePosition({element: document.getElementById("loc"), formatOutput: formatLonlats}),
+			new OpenLayers.Control.Scale('scale'),
+			 new OpenLayers.Control.ScaleLine({div: document.getElementById("scale-line")})]
+					};
+					
+		var lat = 13.20;
+		var lon = 55.7;
+		var zoom = 14.49;
+      map = new OpenLayers.Map("mapDiv", options); 
+	  
+	  
+    	gmapLayer = new OpenLayers.Layer.Google(
+               "Google Streets",
+    {numZoomLevels: 20}
+            );		
+		var mapLayers = "Lund_city_map:roads_WGS,Lund_city_map:Roads_gs_WGS,Lund_city_map:Roads_trough_WGS,Lund_city_map:Highway_WGS,Lund_city_map:Railroads_WGS,Lund_city_map:Country_build_WGS,Lund_city_map:Office_build_WGS,Lund_city_map:Residential_build_WGS";		
+		wms = new OpenLayers.Layer.WMS( "Local server","http://localhost:8080/geoserver/wms",{layers:mapLayers, format:'image/png',transparent: 'true'}, {'reproject': true});
+
+	map.addLayers([gmapLayer, wms]);
+	map.setCenter(new OpenLayers.LonLat(lat, lon), zoom);
+	document.getElementById("datum").innerHTML="SRS:" + map.projection;
+	
+	 }
+	 
+	 function refreshGoogle(){
+
+		 if (document.checks.GoogleSelect[0].checked)
+		 {
+			 var gmap = new OpenLayers.Layer.Google(
+               "Google Streets",
+    			{numZoomLevels: 20}
+            );
+			
+			gmapLayer.destroy();
+			gmapLayer = gmap;
+			map.addLayers([gmapLayer]);
+			 } 
+		 if (document.checks.GoogleSelect[1].checked)
+		 {
+			 var gmap = new OpenLayers.Layer.Google(
+                "Google Physical",
+                {type: G_PHYSICAL_MAP, numZoomLevels: 20}
+            );
+			
+			gmapLayer.destroy();
+			gmapLayer = gmap;
+			map.addLayers([gmapLayer]);
+			 } 
+		 if (document.checks.GoogleSelect[2].checked)
+		 {
+			 var gsat = new OpenLayers.Layer.Google(
+                "Google Satellite",
+                {type: G_SATELLITE_MAP, numZoomLevels: 20}
+            );
+			
+			gmapLayer.destroy();
+			gmapLayer = gsat;
+			map.addLayers([gmapLayer]);
+			 } 
+		 
+		 }
+	 
+	function refresh(){
+	mapLayers="";
+	if (document.checks.SmallRoads.checked) {mapLayers=mapLayers+"Lund_city_map:Roads_gs_WGS,"};
+	if (document.checks.GeneralRoads.checked) {mapLayers=mapLayers+"Lund_city_map:roads_WGS,"};
+	if (document.checks.RoadsThrough.checked) {mapLayers=mapLayers+"Lund_city_map:Roads_trough_WGS,"};
+	if (document.checks.Highways.checked) {mapLayers=mapLayers+"Lund_city_map:Highway_WGS,"};
+	if (document.checks.Railroads.checked) {mapLayers=mapLayers+"Lund_city_map:Railroads_WGS,"};
+	if (document.checks.Residential.checked) {mapLayers=mapLayers+"Residential_build_WGS,"};
+	if (document.checks.Comercial.checked) {mapLayers=mapLayers+"Lund_city_map:Office_build_WGS,"};
+	if (document.checks.Country.checked) {mapLayers=mapLayers+"Lund_city_map:Country_build_WGS,"};
+	if (mapLayers.length > 1) {
+	mapLayers = mapLayers.substring(0,mapLayers.length-1)};
+
+	wms.destroy();
+
+	wms = new OpenLayers.Layer.WMS( "OpenLayers WMS","http://localhost:8080/geoserver/wms",{layers:mapLayers, format:'image/png',transparent: 'true'}, {'reproject': true});
+	map.addLayers([wms]);
+		 }
+	 
+	 
+	ddaccordion.init({
+	headerclass: "submenuheader", //Shared CSS class name of headers group
+	contentclass: "submenu", //Shared CSS class name of contents group
+	revealtype: "click", //Reveal content when user clicks or onmouseover the header? Valid value: "click", "clickgo", or "mouseover"
+	mouseoverdelay: 200, //if revealtype="mouseover", set delay in milliseconds before header expands onMouseover
+	collapseprev: false, //Collapse previous content (so only one open at any time)? true/false 
+	defaultexpanded: [], //index of content(s) open by default [index1, index2, etc] [] denotes no content
+	onemustopen: false, //Specify whether at least one header should be open always (so never all headers closed)
+	animatedefault: false, //Should contents open by default be animated into view?
+	persiststate: true, //persist state of opened contents within browser session?
+	toggleclass: ["", ""], //Two CSS classes to be applied to the header when it's collapsed and expanded, respectively ["class1", "class2"]
+	togglehtml: ["suffix", "<img src='plus.gif' class='statusicon' />", "<img src='minus.gif' class='statusicon' />"], //Additional HTML added to the header when it's collapsed and expanded, respectively  ["position", "html1", "html2"] (see docs)
+	animatespeed: "slow", //speed of animation: integer in milliseconds (ie: 200), or keywords "fast", "normal", or "slow"
+	oninit:function(headers, expandedindices){ //custom code to run when headers have initalized
+		//do nothing
+	},
+	onopenclose:function(header, index, state, isuseractivated){ //custom code to run whenever a header is opened or closed
+		//do nothing
+	}
+})
+
+function formatLonlats(lonLat) {
+        var lat = lonLat.lat;
+        var long = lonLat.lon;
+        var ns = OpenLayers.Util.getFormattedLonLat(lat);
+        var ew = OpenLayers.Util.getFormattedLonLat(long,'lon');
+        return "Lat: " + ns + ', Lon: ' + ew;
+		}
+    </script>
+    
+    
+    <style type="text/css">
+
+
+.glossymenu{
+margin: 1%;
+margin-top:150px;
+padding: 0;
+
+width: 170px; /*width of menu*/
+border-bottom-width: 0;
+position:absolute;
+opacity:0.93;
+
+}
+
+.glossymenu a.menuitem{
+background: black url(glossyback.gif) repeat-x bottom left;
+font: bold 16px "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, sans-serif;
+color: white;
+display: block;
+position: relative; /*To help in the anchoring of the ".statusicon" icon image*/
+width: auto;
+padding: 4px 0;
+
+padding-left: 10px;
+text-decoration: none;
+}
+
+
+.glossymenu a.menuitem:visited, .glossymenu .menuitem:active{
+color: white;
+border: none;
+}
+
+.glossymenu a.menuitem .statusicon{ /*CSS for icon image that gets dynamically added to headers*/
+position:absolute;
+top: 5px;
+right: 5px;
+border: none;
+}
+
+.glossymenu a.menuitem:hover{
+background-image: url(glossyback2.gif);
+
+}
+
+.glossymenu div.submenu{ /*DIV that contains each sub menu*/
+background: white;
+
+}
+
+.glossymenu div.submenu ul{ /*UL of each sub menu*/
+list-style-type: none;
+margin: 0;
+padding: 0;
+
+}
+
+.glossymenu div.submenu ul li{
+border-bottom: 1px solid blue;
+margin: 0;
+
+}
+
+.glossymenu div.submenu ul li p{
+display: block;
+font: normal 16px "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, sans-serif;
+color: black;
+text-decoration: none;
+padding-left: 10px;
+padding-top:0;
+padding-bottom:0;
+margin:0;
+border: none;
+}
+
+.glossymenu div.submenu ul li:hover{
+background: #DFDCCB;
+colorz: white;
+
+}
+
+.glossymenu div.submenu ul li img {margin-right:0px; float:right;border: none;}
+
+</style>
+
+  </head>
+
+  <body onLoad="initialize()" onUnload="GUnload()" style="position:relative; margin:0; min-height:800px; min-width:1300px">
+  <div id="main">
+  
+  
+    <div id="mapDiv" style="width: 100%; height: 100%; position:absolute;">   </div>
+
+	<div id="wrapper" style="position:fixed; margin-left:85%; margin-top:80%; background-color:#36C; padding:10px; color:#FFF; font-family:'Arial Black', Gadget, sans-serif; font-weight:bold;opacity:0.75; border:thick; border-color:#FFF; border-style:solid">
+    <div id="scale-line"></div>
+    <div id="scale"></div>		
+    <div id="datum"></div>
+	</div>
+    
+     <div id="loc" style="position:fixed; margin-left:50%; margin-top:93%; background-color:#36C; padding:3px; color:#FFF; font-family:'Arial Black', Gadget, sans-serif; font-weight:bold;opacity:0.75; border:thick; border-color:#FFF; border-style:solid"></div>
+   
+    <div style="position:fixed; width:1000px; height:83px; margin-left:12%; margin-top:15px;"> 
+    <img src="body.gif" style="opacity:0.95;"> 
+    </div>
+    <div style="position:static; width:150px; height:150px; margin-top:10%; margin-right:1%; float:right; ">
+    <img src="NorthArrow.gif" style="opacity:0.97;"> 
+    </div>
+    
+    
+    
+    <div class="glossymenu">
+<form action="" method=POST name="checks" ID="Form1">
+
+<a class="menuitem submenuheader" href="" >Roads</a>
+<div class="submenu">
+	<ul>
+	<li><input type="checkbox" name="SmallRoads" value="SmallRoads" checked onChange="refresh()">Small roads<img src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=Lund_city_map:Roads_gs_WGS"></li>
+    <li><input type="checkbox" name="GeneralRoads" value="GeneralRoads" checked onChange="refresh()">General roads<img src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=Lund_city_map:roads_WGS"></li>
+    <li><input type="checkbox" name="RoadsThrough" value="RoadsThrough" checked onChange="refresh()">Roads through<img src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=Lund_city_map:Roads_trough_WGS"></li>
+    <li><input type="checkbox" name="Highways" value="Highways" checked onChange="refresh()">Highways<img src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=Lund_city_map:Highway_WGS"></li>
+	<li><input type="checkbox" name="Railroads" value="Railroads" checked onChange="refresh()">Railroads<img src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=Lund_city_map:Railroads_WGS"></li>
+	</ul>
+</div>
+<a class="menuitem submenuheader" href="">Buildings</a>
+<div class="submenu">
+<ul>
+	<li><input type="checkbox" name="Residential" value="Residential" checked onChange="refresh()">Residential<img src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=Lund_city_map:Residential_build_WGS"></li>
+    <li><input type="checkbox" name="Comercial" value="Comercial" checked onChange="refresh()">Comercial<img src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=Lund_city_map:Office_build_WGS"></li>
+    <li><input type="checkbox" name="Country" value="Country" checked onChange="refresh()">Country<img src="http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=Lund_city_map:Country_build_WGS"></li>
+    </ul>
+</div>
+<a class="menuitem submenuheader" href="" >Google</a>
+<div class="submenu">
+<ul>
+<li><input type="radio" name="GoogleSelect" value="RoadMap" onclick ="refreshGoogle()" checked>Road map</li>
+<li><input type="radio" name="GoogleSelect" value="Physical" onclick ="refreshGoogle()">Physical</li>
+<li><input type="radio" name="GoogleSelect" value="Sattelite" onclick ="refreshGoogle()">Sattelite</li>
+</ul>
+</div>
+</form>	</div>
+
+</div>
+     </body>
+</html>
